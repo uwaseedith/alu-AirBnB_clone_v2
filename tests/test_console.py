@@ -23,7 +23,7 @@ class ConsoleTestCase(unittest.TestCase):
     def test_create(self):
         """test create basic"""
         with patch('sys.stdout', self.stdout):
-            self.console.onecmd('create State')
+            self.console.onecmd('create State name="California"')
         state_id = self.stdout.getvalue()[:-1]
         # print(state_id)
         # print(len(state_id))
@@ -32,7 +32,7 @@ class ConsoleTestCase(unittest.TestCase):
     def test_create_save(self):
         """test create save"""
         with patch('sys.stdout', self.stdout):
-            self.console.onecmd('create State name="California')
+            self.console.onecmd('create State name="California"')
         state_id = self.stdout.getvalue()[:-1]
         self.assertIsNotNone(
             self.storage.all()["State.{}".format(state_id)])
