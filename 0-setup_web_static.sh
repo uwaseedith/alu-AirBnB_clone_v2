@@ -1,32 +1,17 @@
 #!/usr/bin/env bash
-# describe it then
-apt-get update
-apt-get -y install nginx
+# bash script that sets up your web servers for the deployment of web_static
 
-directories=("/data/web_static/releases/test" "/data/web_static/shared/")
+sudo apt-get -y update
+sudo apt-get -y install nginx
+sudo service nginx start
 
-for directory in "${directories[@]}"; do
-  #  if [ ! -e "$directory" ]; then
-  mkdir -p "$directory"
-  #  fi
-done
+sudo mkdir -p /data/web_static/shared/
+sudo mkdir -p /data/web_static/releases/test/
+echo "Holberton School" | sudo tee /data/web_static/releases/test/index.html > /dev/null
+sudo ln -sf /data/web_static/releases/test/ /data/web_static/current
 
-echo "<html>
-  <head>
-  </head>
-  <body>
-    Holberton School
-  </body>
-</html>" >/data/web_static/releases/test/index.html
+sudo chown -R ubuntu:ubuntu /data/
 
-# Create a symbolic link /data/web_static/current linked to the /data/web_static/releases/test/ folder.
-# If the symbolic link already exists, it should be deleted and recreated every time the script is ran
-ln --symbolic --force /data/web_static/releases/test /data/web_static/current
+sudo sed -i '44i \\n\tlocation /hbnb_static {\n\t\talias /data/web_static/current/;\n\t}' /etc/nginx/sites-available/default
 
-# The -R option ensures that the ownership changes are applied
-# recursively to all files and directories within the folder
-chown -R ubuntu:ubuntu /data/
-
-sed -i '/listen 80 default_server;/a \ \n    location /hbnb_static {\n        alias /data/web_static/current/;\n        index index.html;\n    }' /etc/nginx/sites-available/default
-
-service nginx restart
+sudo service nginx restart
